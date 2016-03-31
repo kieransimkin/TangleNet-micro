@@ -1,13 +1,19 @@
-#include "uECC/uECC.h"
+#include "Musings/Mechanisms/uECC/uECC.h"
 #include "Musings/Mechanisms/LogWeaver.h"
+
+
+#include <nRF24L01.h>
+#include <RF24.h>
+#include <RF24_config.h>
 
 
 class TangleNet {
 	private:
 		uint8_t sequence;
 		uint8_t ecdsaPrivate[uECC_BYTES];
-		uint8_t ecdsaPublic[uECC_BYTES*2];
+		uint8_t ecdsaPublic[uECC_BYTES+1];
 		char* name;
+		RF24 *radio;
 
 	protected:
 		LogWeaver log;
