@@ -22,14 +22,16 @@ void TangleNet::begin(void) {
 	}
 }
 void TangleNet::generateKey(void) {
+	uint8_t longKey[uECC_BYTES*2];
 	if (!ensureRandomSeeded()) { 
 		log.println("Can't generate a key, you must seed the random number generator first, or provider your own random number generator function");
 		return;
   	}
 
-	if (!uECC_make_key(ecdsaPublic, ecdsaPrivate)) { 
+	if (!uECC_make_key(longKey, ecdsaPrivate)) { 
 		log.println("make key failed");
 	}
+	uECC_compress(longKey, ecdsaPublic);
 	log.println("Made key?");
 }
 bool TangleNet::ensureRandomSeeded(void) { 
