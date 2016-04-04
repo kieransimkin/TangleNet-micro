@@ -1,11 +1,28 @@
+#ifndef _TangleNet_h
+#define _TangleNet_h
+
 #include "Musings/Mechanisms/uECC/uECC.h"
-#include "Musings/Mechanisms/LogWeaver.h"
+#ifdef TANGLENET_RF24
+	#include "Musings/Mechanisms/Radios/RF24/RF24Knot.h"
+#endif
 
+#ifdef DEBUG
+ #include "Musings/Mechanisms/LogWeaver.h"
+ LogWeaver LogWeaverInstance;
+ #define DEBUG_PRINTF(...) LogWeaverInstance.printf(__VA_ARGS__)
+ #define DEBUG_VLI_PRINT(x,y) LogWeaverInstance.vli_print(x,y)
+ #define DEBUG_PRINT(x) LogWeaverInstance.print(x)
+ #define DEBUG_PRINTLN(x) LogWeaverInstance.println(x)
+#else
+ #define DEBUG_PRINTF(...)
+ #define DEBUG_VLI_PRINT(x,y) 
+ #define DEBUG_PRINT(x) 
+ #define DEBUG_PRINTLN(x) 
+#endif
 
-#include <nRF24L01.h>
-#include <RF24.h>
-#include <RF24_config.h>
-
+void setFatalError(void);
+class RF24Knot; // forward decl
+ extern RF24Knot RF24KnotInstance;
 
 class TangleNet {
 	private:
@@ -13,10 +30,9 @@ class TangleNet {
 		uint8_t ecdsaPrivate[uECC_BYTES];
 		uint8_t ecdsaPublic[uECC_BYTES+1];
 		char* name;
-		RF24 *radio;
+		RF24Knot *RF24Radio;
 
 	protected:
-		LogWeaver log;
 		void generateKey(void);
 		int RNG(uint8_t *p_dest, unsigned p_size);
 #ifdef __AVR__
@@ -44,3 +60,4 @@ class TangleNet {
 
 
 };
+#endif

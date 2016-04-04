@@ -1,5 +1,12 @@
 #include "TangleNet.h"
 #include "arduino.h"
+int tangleNetFatalError=0;
+
+void setFatalError(void) { 
+   tangleNetFatalError=1;
+   DEBUG_PRINTLN("Fatal Tanglenet Error");
+}
+
 TangleNet::TangleNet(void) {
 	_init();
 	sequence=0;
@@ -14,28 +21,46 @@ TangleNet::TangleNet(uint8_t sequence, uint8_t* ecdsaPrivate, char* name) {
 	_init();
 }
 void TangleNet::_init(void) {
+#ifndef TANGLENET_RF24
+	RF24Radio=NULL;
+#endif
+#ifndef _Time_h
+
+#endif
+#ifndef TimeAlarms_h
+	
+#endif
 	uECC_set_rng((uECC_RNG_Function) &TangleNet::RNG);
 }
 void TangleNet::begin(void) {
 	if (ecdsaPrivate[0]==0 && ecdsaPrivate[1]==0 && ecdsaPrivate[2]==0) {
 		generateKey();
 	}
+#ifdef TANGLENET_RF24
+	if (RF24Radio==NULL) { 
+		DEBUG_PRINTLN("You must configure RF24 Radio if you're going to use it");
+		setFatalError();
+	} else { 
+		RF24Radio.begin();
+		RF24Radio.setupTangleNet();
+	}
+#endif
 }
 void TangleNet::generateKey(void) {
 	uint8_t longKey[uECC_BYTES*2];
 	if (!ensureRandomSeeded()) { 
-		log.println("Can't generate a key, you must seed the random number generator first, or provider your own random number generator function");
+		DEBUG_PRINTLN("Can't generate a key, you must seed the random number generator first, or provider your own random number generator function");
 		return;
   	}
 
 	if (!uECC_make_key(longKey, ecdsaPrivate)) { 
-		log.println("make key failed");
+		DEBUG_PRINTLN("make key failed");
 	}
 	uECC_compress(longKey, ecdsaPublic);
-	log.println("Made key?");
+	DEBUG_PRINTLN("Made key?");
 }
 bool TangleNet::ensureRandomSeeded(void) { 
-	log.print(random());
+	DEBUG_PRINTLN(random());
 	return true;
 }
 int TangleNet::RNG(uint8_t *p_dest, unsigned p_size)
@@ -48,7 +73,13 @@ int TangleNet::RNG(uint8_t *p_dest, unsigned p_size)
   return 1;
 }
 void TangleNet::addRF24Communication(uint8_t _cepin, uint8_t _cspin) {
+#ifdef TANGLENET_RF24
+	RF24Radio = &RF24KnotInstance;
+	RF24Radio.setPins(_cepin,_cspin);
+#else
+	DEBUG_PRINTLN("You must #define TANGLENET_RF24");
 
+#endif
 }
 bool TangleNet::available(void) {
 
@@ -60,8 +91,8 @@ void TangleNet::loadFromEEPROM(uint8_t offset) {
 
 }
 void TangleNet::dumpLocalKnot(void) {
-	log.printf("Sequence: %d", sequence);
-	log.vli_print(ecdsaPrivate,uECC_BYTES);
+	DEBUG_PRINTF("Sequence: %d", sequence);
+	DEBUG_VLI_PRINT(ecdsaPrivate,uECC_BYTES);
 }
 #ifdef __AVR__
 void TangleNet::setRandomNoiseSource(uint8_t pin){
