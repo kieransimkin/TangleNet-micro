@@ -1,11 +1,24 @@
 #include "RF24Knot.h"
-#ifdef TANGLENET_RF24
+#include "TangleNet.h"
 RF24Knot RF24KnotInstance;
-RF24Knot::RF24Knot(void):RF24(0,0) {
+extern LogWeaver LogWeaverInstance;
+const uint32_t pipes[2] PROGMEM = { 0x1F5F5F, 0xE5C10A };
 
+RF24Knot::RF24Knot(void):RF24(0,0) {
 }
-RF24Knot::setPins(uint8_t _cepin, uint8_t _cspin) { 
-	ce_pin = _cepin;
-	csn_pin = _cspin;
+void RF24Knot::setParent(TangleNet *_parent) { 
+	parent=_parent;
 }
-#endif
+void RF24Knot::setupTangleNet(void) {
+	setAddressSize(3);
+	printDetails();
+	openReadingPipe(0,pipes[0]);
+	openReadingPipe(1,pipes[1]);
+	openReadingPipe(2,pipes[1]+1);
+	openReadingPipe(3,pipes[1]+2);
+	openReadingPipe(4,pipes[1]+3);
+	openReadingPipe(5,pipes[1]+4);
+	printDetails();
+	DEBUG_PRINTLN("Address size:");
+	DEBUG_PRINTLN(getAddressSize());
+}

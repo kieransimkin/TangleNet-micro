@@ -1,14 +1,13 @@
 #ifndef _TangleNet_h
 #define _TangleNet_h
 
+#define DEBUG 1
 #include "Musings/Mechanisms/uECC/uECC.h"
-#ifdef TANGLENET_RF24
-	#include "Musings/Mechanisms/Radios/RF24/RF24Knot.h"
-#endif
-
+#include "Musings/Mechanisms/Radios/RF24/RF24Knot.h"
 #ifdef DEBUG
  #include "Musings/Mechanisms/LogWeaver.h"
- LogWeaver LogWeaverInstance;
+ 
+ 
  #define DEBUG_PRINTF(...) LogWeaverInstance.printf(__VA_ARGS__)
  #define DEBUG_VLI_PRINT(x,y) LogWeaverInstance.vli_print(x,y)
  #define DEBUG_PRINT(x) LogWeaverInstance.print(x)
@@ -21,7 +20,6 @@
 #endif
 
 void setFatalError(void);
-class RF24Knot; // forward decl
  extern RF24Knot RF24KnotInstance;
 
 class TangleNet {

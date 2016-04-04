@@ -1,17 +1,17 @@
-#ifdef TANGLENET_RF24
+#ifndef _RF24Knot_h
+#define _RF24Knot_h
 #include "RF24PacketShape.h"
-#include <nRF24L01.h>
-#include <RF24.h>
-#include <RF24_config.h>
-
-#ifndef __RF24_H__
-#error You must include RF24 in your project to use RF24 Radio
-#endif
+#include "RF24/nRF24L01.h"
+#include "RF24/RF24_config.h"
+#include "RF24/RF24.h"
+class TangleNet;
 class RF24Knot : public RF24 {
 	private:
+		TangleNet *parent;
 	public:
 		RF24Knot(void);
-		void setPins(uint8_t _cepin, uint8_t _cspin);
+		void setParent(TangleNet *_parent);
+	
 		void setupTangleNet(void);
 
 };

@@ -1,6 +1,10 @@
 #include "TangleNet.h"
 #include "arduino.h"
+#define TANGLENET_RF24
+
 int tangleNetFatalError=0;
+LogWeaver LogWeaverInstance;
+extern RF24Knot RF24KnotInstance;
 
 void setFatalError(void) { 
    tangleNetFatalError=1;
@@ -41,8 +45,8 @@ void TangleNet::begin(void) {
 		DEBUG_PRINTLN("You must configure RF24 Radio if you're going to use it");
 		setFatalError();
 	} else { 
-		RF24Radio.begin();
-		RF24Radio.setupTangleNet();
+		RF24Radio->begin();
+		RF24Radio->setupTangleNet();
 	}
 #endif
 }
@@ -75,7 +79,8 @@ int TangleNet::RNG(uint8_t *p_dest, unsigned p_size)
 void TangleNet::addRF24Communication(uint8_t _cepin, uint8_t _cspin) {
 #ifdef TANGLENET_RF24
 	RF24Radio = &RF24KnotInstance;
-	RF24Radio.setPins(_cepin,_cspin);
+	RF24Radio->setParent(this);
+	RF24Radio->setPins(_cepin,_cspin);
 #else
 	DEBUG_PRINTLN("You must #define TANGLENET_RF24");
 
@@ -91,6 +96,7 @@ void TangleNet::loadFromEEPROM(uint8_t offset) {
 
 }
 void TangleNet::dumpLocalKnot(void) {
+	Serial.println("got here");
 	DEBUG_PRINTF("Sequence: %d", sequence);
 	DEBUG_VLI_PRINT(ecdsaPrivate,uECC_BYTES);
 }
