@@ -1,6 +1,6 @@
 
 #include <stdint.h>
-
+#include "../../uECC/uECC.h"
 // used to announce presence on the network
 #define MSG_TYPE_SMILE 0 
 // used to confirm receipt of a message
@@ -34,14 +34,13 @@
 
 #include <Arduino.h>
 
-struct RF24Packet {
+typedef struct {
 	uint8_t MessageType;
 	uint8_t Sequence;
 	uint8_t Flags;
 	uint8_t KnotLinkID[3];
- 	uint8_t Payload[28];	
-};
-/*
+ 	uint8_t Payload[26];	
+} RF24Packet;
 // SMILE
 typedef struct {
 	uint8_t ecdsaPublic[uECC_BYTES+1];
@@ -57,7 +56,6 @@ typedef struct {
 	uint8_t FussinessFactors;
 } RF24MSG_Remiss;
 
-*/
 #define TEMPORAL_FUSSINESS_RTC 1;
 #define TEMPORAL_FUSSINESS_NTP 2;
 #define TEMPORAL_FUSSINESS_GPS 4;
@@ -66,10 +64,4 @@ typedef struct {
 #define TEMPORAL_FUSSINESS_CAESEUM 32;
 #define TEMPORAL_FUSSINESS_TIMELORD 64;
 
-class RF24Message {
-	private:
-	RF24Packet *data;
-	public:
-	RF24Message(char *raw);
-};
 

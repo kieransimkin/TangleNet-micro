@@ -6,7 +6,7 @@
 #include "Musings/Mechanisms/Radios/RF24/RF24Knot.h"
 #ifdef DEBUG
  #include "Musings/Mechanisms/LogWeaver.h"
- 
+#include <TimeAlarms.h> 
  
  #define DEBUG_PRINTF(...) LogWeaverInstance.printf(__VA_ARGS__)
  #define DEBUG_VLI_PRINT(x,y) LogWeaverInstance.vli_print(x,y)
@@ -26,7 +26,6 @@ class TangleNet {
 	private:
 		uint8_t sequence;
 		uint8_t ecdsaPrivate[uECC_BYTES];
-		uint8_t ecdsaPublic[uECC_BYTES+1];
 		char* name;
 		RF24Knot *RF24Radio;
 
@@ -41,6 +40,7 @@ class TangleNet {
 
 	public:
 		
+		uint8_t ecdsaPublic[uECC_BYTES+1];
 		TangleNet(void);
 		TangleNet(uint8_t sequence, uint8_t* ecdsaPrivate);
 		TangleNet(uint8_t sequence, uint8_t* ecdsaPrivate, char* name);
@@ -55,6 +55,7 @@ class TangleNet {
 		void saveToEEPROM(uint8_t offset);
 		bool available(void);
 		void dumpLocalKnot(void);
+		uint8_t getSequence(void);
 
 
 };

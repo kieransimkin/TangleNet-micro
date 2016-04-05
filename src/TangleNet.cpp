@@ -87,7 +87,14 @@ void TangleNet::addRF24Communication(uint8_t _cepin, uint8_t _cspin) {
 #endif
 }
 bool TangleNet::available(void) {
+	if (RF24Radio!=NULL && RF24Radio->checkAvailable()) { 
 
+	}
+	Alarm.delay(1);
+	return false;
+}
+uint8_t TangleNet::getSequence(void) { 
+	return sequence++;
 }
 void TangleNet::loadFromEEPROM(void) {
 
